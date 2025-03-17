@@ -2,15 +2,15 @@ import random
 from argparse import ArgumentParser
 from collections import deque
 
-import gym
-from gym.wrappers import RescaleAction
+import gymnasium as gym
+from gymnasium.wrappers import RescaleAction
 import numpy as np
 import torch
 import pdb
 from torch.utils.tensorboard import SummaryWriter
 from typing import Dict, Callable
 
-from top import TOP_Agent
+from top import TOP_Agent as DOPE_Agent
 from utils import MeanStdevFilter, Transition, make_gif, make_checkpoint
 
 GYM_ENV = gym.wrappers.time_limit.TimeLimit
@@ -48,8 +48,8 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
     random.seed(seed)
     torch.manual_seed(seed)
     np.random.seed(seed)
-    env.seed(seed)
-    env.action_space.np_random.seed(seed)
+    # env.seed(seed)
+    # env.action_space.np_random.seed(seed)
 
     max_steps = env.spec.max_episode_steps
 
@@ -62,7 +62,7 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
         episode_reward = 0
         i_episode += 1
         log_episode += 1
-        state = env.reset()
+        state, info = env.reset(seed=seed)
         if state_filter:
             state_filter.update(state)
         done = False
@@ -80,9 +80,9 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
             else:
                 action = agent.get_action(state, state_filter=state_filter)
             
-            nextstate, reward, done, _ = env.step(action)
-            # if we hit the time-limit, it's not a 'real' done; we don't want to assign low value to those states
-            real_done = False if time_step == max_steps else done
+            nextstate, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+            real_done = truncated if time_step == max_steps else done
             agent.replay_pool.push(Transition(state, action, reward, nextstate, real_done))
             state = nextstate
             if state_filter:
@@ -142,10 +142,11 @@ def evaluate_agent(
     reward_sum = 0
     for _ in range(n_starts):
         done = False
-        state = env.reset()
+        state, info = env.reset()
         while (not done):
             action = agent.get_action(state, state_filter=state_filter, deterministic=True)
-            nextstate, reward, done, _ = env.step(action)
+            nextstate, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
             reward_sum += reward
             state = nextstate
     return reward_sum / n_starts
@@ -154,7 +155,7 @@ def evaluate_agent(
 def main():
     
     parser = ArgumentParser()
-    parser.add_argument('--env', type=str, default='HalfCheetah-v2')
+    parser.add_argument('--env', type=str, default='HalfCheetah-v4')
     parser.add_argument('--seed', type=int, default=100)
     parser.add_argument('--use_obs_filter', dest='obs_filter', action='store_true')
     parser.add_argument('--update_every_n_steps', type=int, default=1)
@@ -171,8 +172,22 @@ def main():
     params = vars(args)
 
     seed = params['seed']
-    env = gym.make(params['env'])
+    env = gym.make(params['env'], render_mode=None)
     env = RescaleAction(env, -1, 1)
+    # Initialize wandb to track tensorboard logs
+    import wandb
+    from pathlib import Path
+    
+    import os 
+    os.environ["WANDB_API_KEY"] = "7643119a72d175de7cb1183948b69392d8d9d3e9"
+    # Initialize wandb with the same configuration name used for tensorboard
+    wandb.init(
+        project="OAP",
+        entity="kaustubh95",
+        name=f"DOPE_{params['env']}_nq{params['n_quantiles']}_{params['bandit_lr']}_seed{seed}",
+        config=params,
+        sync_tensorboard=True # This will sync the tensorboard logs to wandb
+    )
 
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]

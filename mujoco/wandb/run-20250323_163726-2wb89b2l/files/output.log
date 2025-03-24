@@ -1,0 +1,66 @@
+Episode 2 	 Samples 2000 	 Avg length: 1000.0 	 Test reward: -514.2688565075779 	 Train reward: -312.1192651058278 	 WD: 1326.72802734375 	 Number of Updates: 1000
+Episode 3 	 Samples 3000 	 Avg length: 1000.0 	 Test reward: -555.6943401963053 	 Train reward: -384.14654146175855 	 WD: 2981.32763671875 	 Number of Updates: 2000
+Episode 4 	 Samples 4000 	 Avg length: 1000.0 	 Test reward: -594.5406195139883 	 Train reward: -288.3867717392381 	 WD: 5560.87744140625 	 Number of Updates: 3000
+Episode 5 	 Samples 5000 	 Avg length: 1000.0 	 Test reward: -626.3841079856785 	 Train reward: -243.655481373053 	 WD: 7409.29638671875 	 Number of Updates: 4000
+Episode 6 	 Samples 6000 	 Avg length: 1000.0 	 Test reward: -720.7080312099072 	 Train reward: -167.77314669590268 	 WD: 6926.8837890625 	 Number of Updates: 5000
+Episode 7 	 Samples 7000 	 Avg length: 1000.0 	 Test reward: -534.7731581606956 	 Train reward: -250.31812878706396 	 WD: 6954.93603515625 	 Number of Updates: 6000
+Episode 8 	 Samples 8000 	 Avg length: 1000.0 	 Test reward: -500.87626772755254 	 Train reward: -215.9726644603962 	 WD: 6629.6552734375 	 Number of Updates: 7000
+Episode 9 	 Samples 9000 	 Avg length: 1000.0 	 Test reward: -688.363075075099 	 Train reward: -221.6710117883954 	 WD: 8231.83203125 	 Number of Updates: 8000
+Episode 10 	 Samples 10000 	 Avg length: 1000.0 	 Test reward: -657.8748628647396 	 Train reward: -292.45825179157805 	 WD: 7730.39794921875 	 Number of Updates: 9000
+Episode 11 	 Samples 11000 	 Avg length: 1000.0 	 Test reward: -732.4050082640566 	 Train reward: -372.1048181226309 	 WD: 8231.3359375 	 Number of Updates: 10000
+Episode 12 	 Samples 12000 	 Avg length: 1000.0 	 Test reward: -523.7404102432649 	 Train reward: -251.24063454388386 	 WD: 9384.6298828125 	 Number of Updates: 11000
+Episode 13 	 Samples 13000 	 Avg length: 1000.0 	 Test reward: -555.125212585843 	 Train reward: -472.37363344071605 	 WD: 9590.609375 	 Number of Updates: 12000
+Episode 14 	 Samples 14000 	 Avg length: 1000.0 	 Test reward: -465.74489118949975 	 Train reward: -238.76088118011614 	 WD: 9926.607421875 	 Number of Updates: 13000
+Episode 15 	 Samples 15000 	 Avg length: 1000.0 	 Test reward: -353.5791401469085 	 Train reward: -223.16343479402798 	 WD: 11357.87890625 	 Number of Updates: 14000
+Episode 16 	 Samples 16000 	 Avg length: 1000.0 	 Test reward: -416.29385168947107 	 Train reward: -318.7694120142597 	 WD: 10257.2021484375 	 Number of Updates: 15000
+Episode 17 	 Samples 17000 	 Avg length: 1000.0 	 Test reward: -499.1510346407118 	 Train reward: -259.09409327934395 	 WD: 11197.5498046875 	 Number of Updates: 16000
+Episode 18 	 Samples 18000 	 Avg length: 1000.0 	 Test reward: -383.38120464608835 	 Train reward: -144.72342193218984 	 WD: 11152.470703125 	 Number of Updates: 17000
+Episode 19 	 Samples 19000 	 Avg length: 1000.0 	 Test reward: -586.2951896988748 	 Train reward: -315.0462056299642 	 WD: 10422.1796875 	 Number of Updates: 18000
+Episode 20 	 Samples 20000 	 Avg length: 1000.0 	 Test reward: -551.4558965120981 	 Train reward: -251.29809139149316 	 WD: 10150.4140625 	 Number of Updates: 19000
+Episode 21 	 Samples 21000 	 Avg length: 1000.0 	 Test reward: -481.10919680735896 	 Train reward: -316.93333141637834 	 WD: 11969.60546875 	 Number of Updates: 20000
+Episode 22 	 Samples 22000 	 Avg length: 1000.0 	 Test reward: -250.5979434667238 	 Train reward: -300.8578344579983 	 WD: 12612.7177734375 	 Number of Updates: 21000
+Episode 23 	 Samples 23000 	 Avg length: 1000.0 	 Test reward: -594.3744486886872 	 Train reward: -269.19901746946016 	 WD: 13164.1640625 	 Number of Updates: 22000
+Episode 24 	 Samples 24000 	 Avg length: 1000.0 	 Test reward: -845.9518564378252 	 Train reward: -241.46219923087037 	 WD: 12643.328125 	 Number of Updates: 23000
+Episode 25 	 Samples 25000 	 Avg length: 1000.0 	 Test reward: -587.4217927120741 	 Train reward: -381.44321968005886 	 WD: 11052.9375 	 Number of Updates: 24000
+Episode 26 	 Samples 26000 	 Avg length: 1000.0 	 Test reward: -534.2984432289948 	 Train reward: -367.9462343103264 	 WD: 13405.177734375 	 Number of Updates: 25000
+Episode 27 	 Samples 27000 	 Avg length: 1000.0 	 Test reward: -288.43712444819903 	 Train reward: -568.806488847094 	 WD: 13243.849609375 	 Number of Updates: 26000
+Episode 28 	 Samples 28000 	 Avg length: 1000.0 	 Test reward: -227.4002152526091 	 Train reward: -517.8652466593164 	 WD: 13022.03515625 	 Number of Updates: 27000
+Episode 29 	 Samples 29000 	 Avg length: 1000.0 	 Test reward: -6.13452759018861 	 Train reward: -313.2936201512513 	 WD: 12090.8759765625 	 Number of Updates: 28000
+Episode 30 	 Samples 30000 	 Avg length: 1000.0 	 Test reward: 155.0783127274013 	 Train reward: -159.95972246268013 	 WD: 11362.875 	 Number of Updates: 29000
+Episode 31 	 Samples 31000 	 Avg length: 1000.0 	 Test reward: 736.9881102059161 	 Train reward: 15.009870422426506 	 WD: 12128.220703125 	 Number of Updates: 30000
+Episode 32 	 Samples 32000 	 Avg length: 1000.0 	 Test reward: 918.8763378841181 	 Train reward: 257.85786893148185 	 WD: 10858.8056640625 	 Number of Updates: 31000
+Episode 33 	 Samples 33000 	 Avg length: 1000.0 	 Test reward: 1132.072148683225 	 Train reward: 837.7381144131832 	 WD: 12996.8193359375 	 Number of Updates: 32000
+Episode 34 	 Samples 34000 	 Avg length: 1000.0 	 Test reward: 1237.8590828753338 	 Train reward: 1003.9644156610752 	 WD: 9434.533203125 	 Number of Updates: 33000
+Episode 35 	 Samples 35000 	 Avg length: 1000.0 	 Test reward: 1000.7156361079344 	 Train reward: 1188.3405704176073 	 WD: 10329.5693359375 	 Number of Updates: 34000
+Episode 36 	 Samples 36000 	 Avg length: 1000.0 	 Test reward: 275.5338562378191 	 Train reward: 1223.8075116851044 	 WD: 10375.5771484375 	 Number of Updates: 35000
+Episode 37 	 Samples 37000 	 Avg length: 1000.0 	 Test reward: 90.47177230507268 	 Train reward: -48.28839693731689 	 WD: 10682.54296875 	 Number of Updates: 36000
+Episode 38 	 Samples 38000 	 Avg length: 1000.0 	 Test reward: 1740.079536077418 	 Train reward: 34.021666279228825 	 WD: 10488.423828125 	 Number of Updates: 37000
+Episode 39 	 Samples 39000 	 Avg length: 1000.0 	 Test reward: 1758.5217246007214 	 Train reward: 1134.2438424107406 	 WD: 11509.564453125 	 Number of Updates: 38000
+Traceback (most recent call last):
+  File "train_top_agent.py", line 212, in <module>
+  File "train_top_agent.py", line 208, in main
+    n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'])
+  File "train_top_agent.py", line 118, in train_agent_model_free
+    writer.add_scalar(f'Distributions/arm{i}', p, n_updates)
+  File "train_top_agent.py", line 150, in evaluate_agent
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/rae.py", line 145, in get_action
+    action = self.policy(state)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/module.py", line 722, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/networks.py", line 34, in forward
+    x = self.network(x)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/module.py", line 722, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/networks.py", line 22, in forward
+    return self.network(x)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/module.py", line 722, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/module.py", line 722, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/linear.py", line 91, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/functional.py", line 1674, in linear
+    ret = torch.addmm(bias, input, weight.t())
+KeyboardInterrupt

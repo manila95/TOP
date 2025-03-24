@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from typing import List
 
-Transition = namedtuple('Transition', ('state', 'action', 'reward', 'nextstate', 'real_done', 'prev_reward', 'arm'))
+Transition = namedtuple('Transition', ('state', 'action', 'reward', 'nextstate', 'real_done','cost', 'prev_reward', 'arm',))
 Transition.__new__.__defaults__ = (None,) * len(Transition._fields) # pre 3.7  
 # https://stackoverflow.com/questions/11351032/named-tuple-and-default-values-for-optional-keyword-arguments
 

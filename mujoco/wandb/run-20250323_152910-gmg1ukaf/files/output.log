@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "train_top_agent.py", line 212, in <module>
+    main()
+  File "train_top_agent.py", line 208, in main
+    train_agent_model_free(agent=agent, env=env, params=params)
+  File "train_top_agent.py", line 95, in train_agent_model_free
+    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/rae.py", line 343, in optimize
+    q1_loss_step, q2_loss_step, quantiles1_step, quantiles2_step = self.update_q_functions(state_batch, action_batch, reward_batch, nextstate_batch, done_batch, rae_beta)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/rae.py", line 209, in update_q_functions
+    td_errors_1 = quantile_target - quantiles_1[..., None] # [batch_size, n_quantiles, n_quantiles]
+RuntimeError: The size of tensor a (256) must match the size of tensor b (50) at non-singleton dimension 2

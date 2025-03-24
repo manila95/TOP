@@ -1,0 +1,50 @@
+{
+  "os": "Linux-5.15.0-101-generic-x86_64-with-debian-bookworm-sid",
+  "python": "3.7.12",
+  "startedAt": "2025-03-23T19:17:45.039492Z",
+  "args": [
+    "--model_type",
+    "RAE"
+  ],
+  "program": "train_top_agent.py",
+  "codePath": "mujoco/train_top_agent.py",
+  "git": {
+    "remote": "git@github.com:manila95/TOP.git",
+    "commit": "285aa194a68c87429674a14199b3c6b88581ed59"
+  },
+  "email": "kaustubh3095@gmail.com",
+  "root": "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco",
+  "host": "cn-c020.server.mila.quebec",
+  "username": "kaustubh.mani",
+  "executable": "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/bin/python",
+  "codePathLocal": "train_top_agent.py",
+  "cpu_count": 64,
+  "cpu_count_logical": 64,
+  "gpu": "Quadro RTX 8000",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "468109746176",
+      "used": "33956839424"
+    }
+  },
+  "memory": {
+    "total": "405580693504"
+  },
+  "cpu": {
+    "count": 64,
+    "countLogical": 64
+  },
+  "gpu_nvidia": [
+    {
+      "name": "Quadro RTX 8000",
+      "memoryTotal": "48318382080",
+      "cudaCores": 4608,
+      "architecture": "Turing"
+    }
+  ],
+  "slurm": {
+    "job_id": "6386371"
+  },
+  "cudaVersion": "12.6"
+}

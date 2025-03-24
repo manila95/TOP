@@ -16,7 +16,7 @@ from utils import MeanStdevFilter, Transition, make_gif, make_checkpoint
 
 GYM_ENV = gym.wrappers.time_limit.TimeLimit
 
-def train_agent_model_free(agent, env, params) -> None:
+def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> None:
     
     update_timestep = params['update_every_n_steps']
     seed = params['seed']
@@ -92,18 +92,12 @@ def train_agent_model_free(agent, env, params) -> None:
             episode_reward += reward
             # update if it's time
             if cumulative_timestep % update_timestep == 0 and cumulative_timestep > n_collect_steps:
-                if params["model_type"] == "TOP":
-                    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
-                elif params["model_type"] == "RAE":
-                    q1_loss, q2_loss, qc1_loss, qc2_loss, pi_loss, avg_wd, q1, q2, mean_beta = agent.optimize(update_timestep, optimism, state_filter=state_filter)
+                q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
                 n_updates += 1
             # logging
             if cumulative_timestep % log_interval == 0 and cumulative_timestep > n_collect_steps:
                 writer.add_scalar('Loss/Q-func_1', q1_loss, n_updates)
                 writer.add_scalar('Loss/Q-func_2', q2_loss, n_updates)
-                if params["model_type"] == "RAE":
-                    writer.add_scalar('Loss/Q-func_cost_1', qc1_loss, n_updates)
-                    writer.add_scalar('Loss/Q-func_cost_2', qc2_loss, n_updates)
                 writer.add_scalar('Loss/WD', avg_wd, n_updates)
                 writer.add_scalar('Distributions/Mean_1', torch.mean(q1), n_updates)
                 writer.add_scalar('Distributions/Median_1', torch.median(q1), n_updates)
@@ -112,12 +106,9 @@ def train_agent_model_free(agent, env, params) -> None:
 
                 # bandit tracking
                 writer.add_scalar('Distributions/optimism', optimism, n_updates)
-                if params["model_type"] == "TOP":
-                    arm_probs = agent.TDC.get_probs() 
-                    for i, p in enumerate(arm_probs):
-                        writer.add_scalar(f'Distributions/arm{i}', p, n_updates)
-                elif params["model_type"] == "RAE":
-                    writer.add_scalar('Distributions/mean_beta', mean_beta, n_updates)
+                arm_probs = agent.TDC.get_probs() 
+                for i, p in enumerate(arm_probs):
+                    writer.add_scalar(f'Distributions/arm{i}', p, n_updates)
 
                 if pi_loss:
                     writer.add_scalar('Loss/policy', pi_loss, n_updates)

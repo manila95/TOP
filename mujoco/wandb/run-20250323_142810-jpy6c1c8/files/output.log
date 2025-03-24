@@ -1,0 +1,20 @@
+Episode 2 	 Samples 2000 	 Avg length: 1000.0 	 Test reward: -477.6483912860962 	 Train reward: -268.2212741466347 	 WD: 1668.3076171875 	 Number of Updates: 1000
+Episode 3 	 Samples 3000 	 Avg length: 1000.0 	 Test reward: -504.6569316705314 	 Train reward: -341.5175767528722 	 WD: 2252.2880859375 	 Number of Updates: 2000
+Episode 4 	 Samples 4000 	 Avg length: 1000.0 	 Test reward: -549.2410306974531 	 Train reward: -346.1410672716898 	 WD: 4029.980224609375 	 Number of Updates: 3000
+Episode 5 	 Samples 5000 	 Avg length: 1000.0 	 Test reward: -457.6875092284078 	 Train reward: -283.0063278480112 	 WD: 4011.62060546875 	 Number of Updates: 4000
+Episode 6 	 Samples 6000 	 Avg length: 1000.0 	 Test reward: -495.27956873524425 	 Train reward: -214.64596655538892 	 WD: 5253.33251953125 	 Number of Updates: 5000
+Episode 7 	 Samples 7000 	 Avg length: 1000.0 	 Test reward: -440.0802122965873 	 Train reward: -319.80844491441803 	 WD: 5433.08984375 	 Number of Updates: 6000
+Traceback (most recent call last):
+  File "train_top_agent.py", line 211, in <module>
+    main()
+  File "train_top_agent.py", line 207, in main
+    train_agent_model_free(agent=agent, env=env, params=params)
+  File "train_top_agent.py", line 95, in train_agent_model_free
+    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/top.py", line 259, in optimize
+    q1_loss_step, q2_loss_step, quantiles1_step, quantiles2_step = self.update_q_functions(state_batch, action_batch, reward_batch, nextstate_batch, done_batch, beta)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/top.py", line 193, in update_q_functions
+    quantiles_1, quantiles_2 = self.q_funcs(state_batch, action_batch)
+  File "/home/mila/k/kaustubh.mani/scratch/anaconda3/envs/top/lib/python3.7/site-packages/torch/nn/modules/module.py", line 723, in _call_impl
+    for hook in itertools.chain(
+KeyboardInterrupt

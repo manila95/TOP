@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "train_top_agent.py", line 212, in <module>
+    main()
+  File "train_top_agent.py", line 208, in main
+    train_agent_model_free(agent=agent, env=env, params=params)
+  File "train_top_agent.py", line 95, in train_agent_model_free
+    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
+  File "/network/scratch/k/kaustubh.mani/projects/TOP/mujoco/rae.py", line 330, in optimize
+    cost_batch = torch.FloatTensor(samples.cost).to(device).unsqueeze(1)
+TypeError: must be real number, not NoneType

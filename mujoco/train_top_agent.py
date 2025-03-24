@@ -14,7 +14,7 @@ from top import TOP_Agent as DOPE_Agent
 from rae import RAE_Agent
 from utils import MeanStdevFilter, Transition, make_gif, make_checkpoint
 
-GYM_ENV = gym.wrappers.time_limit.TimeLimit
+GYM_ENV = gym.wrappers.TimeLimit
 
 def train_agent_model_free(agent, env, params) -> None:
     
@@ -90,12 +90,19 @@ def train_agent_model_free(agent, env, params) -> None:
             if state_filter:
                 state_filter.update(state)
             episode_reward += reward
+
+
+            if params["model_type"] == "pessimistic":
+                optimism = -1
+            elif params["model_type"] == "optimistic":
+                optimism = 1
+
             # update if it's time
             if cumulative_timestep % update_timestep == 0 and cumulative_timestep > n_collect_steps:
-                if params["model_type"] == "TOP":
-                    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
-                elif params["model_type"] == "RAE":
+                if params["model_type"] == "RAE":
                     q1_loss, q2_loss, qc1_loss, qc2_loss, pi_loss, avg_wd, q1, q2, mean_beta = agent.optimize(update_timestep, optimism, state_filter=state_filter)
+                else:
+                    q1_loss, q2_loss, pi_loss, avg_wd, q1, q2 = agent.optimize(update_timestep, optimism, state_filter=state_filter)
                 n_updates += 1
             # logging
             if cumulative_timestep % log_interval == 0 and cumulative_timestep > n_collect_steps:
@@ -176,7 +183,7 @@ def main():
     parser.add_argument('--save_model', dest='save_model', action='store_true')
     parser.add_argument('--n_quantiles', type=int, default=50)
     parser.add_argument('--bandit_lr', type=float, default=0.1)
-    parser.add_argument('--model_type', type=str, default='TOP', choices=['TOP', 'RAE'])
+    parser.add_argument('--model_type', type=str, default='TOP', choices=['TOP', 'RAE', 'optimistic', 'pessimistic'])
     parser.set_defaults(obs_filter=False)
     parser.set_defaults(save_model=False)
 
@@ -205,11 +212,11 @@ def main():
     action_dim = env.action_space.shape[0]
 
     # initialize agent
-    if args.model_type == "TOP":
-        agent = DOPE_Agent(seed, state_dim, action_dim, \
+    if args.model_type == "RAE":
+        agent = RAE_Agent(seed, state_dim, action_dim, \
             n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'])
     else: 
-        agent = RAE_Agent(seed, state_dim, action_dim, \
+        agent = DOPE_Agent(seed, state_dim, action_dim, \
             n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'])
 
     # train agent 

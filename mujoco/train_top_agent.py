@@ -21,7 +21,7 @@ def train_agent_model_free(agent, env, params) -> None:
     update_timestep = params['update_every_n_steps']
     seed = params['seed']
     log_interval = 1000
-    gif_interval = 1000000
+    gif_interval = 100000
     n_random_actions = params['n_random_actions']
     n_evals = params['n_evals']
     n_collect_steps = params['n_collect_steps']
@@ -138,7 +138,7 @@ def train_agent_model_free(agent, env, params) -> None:
                 episode_steps = []
                 episode_rewards = []
             if cumulative_timestep % gif_interval == 0:
-                make_gif(agent, env, cumulative_timestep, state_filter, name=com)
+                # make_gif(agent, env, cumulative_timestep, state_filter, name=com)
                 if save_model:
                     make_checkpoint(agent, cumulative_timestep, params['env'])
 
@@ -191,7 +191,7 @@ def main():
     params = vars(args)
 
     seed = params['seed']
-    env = gym.make(params['env'], render_mode=None)
+    env = gym.make(params['env'], render_mode="rgb_array")
     env = RescaleAction(env, -1, 1)
     # Initialize wandb to track tensorboard logs
     import wandb

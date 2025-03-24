@@ -88,7 +88,7 @@ def make_gif(policy, env, step_count, state_filter, maxsteps=1000, name=None):
     rewards = []
     t = 0
     while (not done) & (t < maxsteps):
-        s = env.render('rgb_array')
+        s = env.render()
         steps.append(s)
         action = policy.get_action(state, state_filter=state_filter, deterministic=True)
         action = np.clip(action, env.action_space.low[0], env.action_space.high[0])

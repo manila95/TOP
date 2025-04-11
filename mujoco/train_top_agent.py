@@ -92,10 +92,8 @@ def train_agent_model_free(agent, env, params) -> None:
             episode_reward += reward
 
 
-            if params["model_type"] == "pessimistic":
-                optimism = -1
-            elif params["model_type"] == "optimistic":
-                optimism = 1
+            if params["model_type"] == "beta":
+                optimism = params["beta"]
 
             # update if it's time
             if cumulative_timestep % update_timestep == 0 and cumulative_timestep > n_collect_steps:
@@ -183,7 +181,8 @@ def main():
     parser.add_argument('--save_model', dest='save_model', action='store_true')
     parser.add_argument('--n_quantiles', type=int, default=50)
     parser.add_argument('--bandit_lr', type=float, default=0.1)
-    parser.add_argument('--model_type', type=str, default='TOP', choices=['TOP', 'RAE', 'optimistic', 'pessimistic'])
+    parser.add_argument('--model_type', type=str, default='TOP', choices=['TOP', 'beta'])
+    parser.add_argument('--beta', type=float, default=0)
     parser.set_defaults(obs_filter=False)
     parser.set_defaults(save_model=False)
 

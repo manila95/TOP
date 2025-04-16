@@ -27,6 +27,7 @@ def train_agent_model_free(agent, env, params) -> None:
     n_collect_steps = params['n_collect_steps']
     use_statefilter = params['obs_filter']
     save_model = params['save_model']
+    use_meta = params['use_meta']
 
     assert n_collect_steps > agent.batchsize, "We must initially collect as many steps as the batch size!"
 
@@ -40,6 +41,8 @@ def train_agent_model_free(agent, env, params) -> None:
     samples_number = 0
     episode_rewards = []
     episode_steps = []
+    episode_betas = []
+    last_episode_returns = None
 
     if use_statefilter:
         state_filter = MeanStdevFilter(env.env.observation_space.shape[0])
@@ -69,7 +72,13 @@ def train_agent_model_free(agent, env, params) -> None:
         done = False
 
         # sample an optimism setting for this episode
-        optimism = agent.TDC.sample()
+        if use_meta:
+            state_tensor = torch.FloatTensor(state).view(1, -1).to(agent.q_funcs.device)
+            action = agent.get_action(state, state_filter=state_filter)
+            action_tensor = torch.FloatTensor(action).view(1, -1).to(agent.q_funcs.device)
+            optimism = agent.get_beta(state_tensor, action_tensor)
+        else:
+            optimism = agent.TDC.sample()
 
         while (not done):
             cumulative_log_timestep += 1
@@ -90,7 +99,6 @@ def train_agent_model_free(agent, env, params) -> None:
             if state_filter:
                 state_filter.update(state)
             episode_reward += reward
-
 
             if params["model_type"] == "beta":
                 optimism = params["beta"]
@@ -135,6 +143,17 @@ def train_agent_model_free(agent, env, params) -> None:
                 print(progress_str)
                 episode_steps = []
                 episode_rewards = []
+                
+                # Update meta-controller if using meta-learning
+                if use_meta and last_episode_returns is not None:
+                    episode_returns = torch.FloatTensor(episode_rewards).to(agent.q_funcs.device) - last_episode_returns
+                    meta_loss, mean_beta = agent.update_meta_controller(episode_returns)
+                    writer.add_scalar('Meta/Loss', meta_loss, n_updates)
+                    writer.add_scalar('Meta/Mean_Beta', mean_beta, n_updates)
+                    episode_betas = []
+                
+                last_episode_returns = torch.FloatTensor(episode_rewards).to(agent.q_funcs.device)
+                
             if cumulative_timestep % gif_interval == 0:
                 # make_gif(agent, env, cumulative_timestep, state_filter, name=com)
                 if save_model:
@@ -142,11 +161,14 @@ def train_agent_model_free(agent, env, params) -> None:
 
         episode_steps.append(time_step)
         episode_rewards.append(episode_reward)
+        if use_meta:
+            episode_betas.append(optimism)
 
-        # update bandit parameters
-        feedback = episode_reward - prev_episode_reward
-        agent.TDC.update_dists(feedback)
-        prev_episode_reward = episode_reward
+        # update bandit parameters if not using meta-learning
+        if not use_meta:
+            feedback = episode_reward - prev_episode_reward
+            agent.TDC.update_dists(feedback)
+            prev_episode_reward = episode_reward
 
 
 def evaluate_agent(
@@ -183,8 +205,10 @@ def main():
     parser.add_argument('--bandit_lr', type=float, default=0.1)
     parser.add_argument('--model_type', type=str, default='TOP', choices=['TOP', 'beta'])
     parser.add_argument('--beta', type=float, default=0)
+    parser.add_argument('--use_meta', dest='use_meta', action='store_true')
     parser.set_defaults(obs_filter=False)
     parser.set_defaults(save_model=False)
+    parser.set_defaults(use_meta=False)
 
     args = parser.parse_args()
     params = vars(args)
@@ -216,7 +240,8 @@ def main():
             n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'])
     else: 
         agent = DOPE_Agent(seed, state_dim, action_dim, \
-            n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'])
+            n_quantiles=params['n_quantiles'], bandit_lr=params['bandit_lr'],
+            use_meta=params['use_meta'])
 
     # train agent 
     train_agent_model_free(agent=agent, env=env, params=params)

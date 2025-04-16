@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from utils import ReplayPool, calculate_quantile_huber_loss, compute_wd_quantile
 from networks import Policy, QuantileDoubleQFunc
 from bandit import ExpWeights
+from meta_controller import MetaController
 from typing import Callable, Dict
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -34,7 +35,8 @@ class TOP_Agent:
         n_quantiles: int = 100,
         kappa: float = 1.0,
         beta: float = 0.0,
-        bandit_lr: float = 0.1
+        bandit_lr: float = 0.1,
+        use_meta: bool = False
         ) -> None:
         """
         Initialize DOPE agent. 
@@ -57,12 +59,14 @@ class TOP_Agent:
             n_quantiles (int, optional): number of quantiles. Defaults to 100.
             kappa (float, optional): constant for Huber loss. Defaults to 1.0.
             bandit_lr (float, optional): bandit learning rate. Defaults to 0.1.
+            use_meta (bool, optional): whether to use meta-controller for beta prediction. Defaults to False.
         """
         self.gamma = gamma
         self.tau = tau
         self.batchsize = batchsize
         self.update_interval = update_interval
         self.action_lim = action_lim
+        self.use_meta = use_meta
 
         self.target_noise = target_noise
         self.target_noise_clip = target_noise_clip
@@ -90,8 +94,13 @@ class TOP_Agent:
         self.n_quantiles = n_quantiles
         self.kappa = kappa
 
-        # bandit top-down controller
-        self.TDC = ExpWeights(arms=[-1, 0], lr=bandit_lr, init=0.0, use_std=True) 
+        # Initialize meta-controller if using meta-learning
+        if use_meta:
+            self.meta_controller = MetaController(state_dim, action_dim, hidden_size=hidden_size, lr=lr).to(device)
+            self.meta_buffer = ReplayPool(capacity=buffer_size)
+        else:
+            # bandit top-down controller
+            self.TDC = ExpWeights(arms=[-1, 0], lr=bandit_lr, init=0.0, use_std=True) 
 
         # init optimizers
         self.q_optimizer = torch.optim.Adam(self.q_funcs.parameters(), lr=lr)
@@ -100,6 +109,44 @@ class TOP_Agent:
         self.replay_pool = ReplayPool(capacity=int(buffer_size))
 
         self._update_counter = 0
+
+    def get_beta(self, state: torch.Tensor, action: torch.Tensor) -> float:
+        """Get beta value for the given state-action pair
+        
+        Args:
+            state: Current state
+            action: Current action
+            
+        Returns:
+            float: Beta value
+        """
+        if self.use_meta:
+            return self.meta_controller.predict_beta(state, action)
+        else:
+            return self.TDC.sample()
+
+    def update_meta_controller(self, episode_returns: torch.Tensor) -> Tuple[float, float]:
+        """Update the meta-controller using episode returns
+        
+        Args:
+            episode_returns: Returns from recent episodes
+            
+        Returns:
+            Tuple of (meta_loss, mean_beta)
+        """
+        if not self.use_meta:
+            return 0.0, 0.0
+            
+        # Sample a batch from meta buffer
+        samples = self.meta_buffer.sample(self.batchsize)
+        states = torch.FloatTensor(samples.state).to(device)
+        actions = torch.FloatTensor(samples.action).to(device)
+        betas = torch.FloatTensor(samples.beta).to(device)
+        
+        # Update meta-controller
+        meta_loss, mean_beta = self.meta_controller.update(states, actions, episode_returns, betas)
+        
+        return meta_loss, mean_beta
 
     def reallocate_replay_pool(self, new_size: int) -> None:
         """Reset buffer
@@ -255,8 +302,23 @@ class TOP_Agent:
             reward_batch = torch.FloatTensor(samples.reward).to(device).unsqueeze(1)
             done_batch = torch.FloatTensor(samples.real_done).to(device).unsqueeze(1)
             
+            # Get beta values for this batch
+            if self.use_meta:
+                beta = self.get_beta(state_batch, action_batch)
+                # Store in meta buffer for later updates
+                self.meta_buffer.push(Transition(
+                    state=samples.state,
+                    action=samples.action,
+                    reward=samples.reward,
+                    nextstate=samples.nextstate,
+                    real_done=samples.real_done,
+                    cost=samples.cost,
+                    beta=beta
+                ))
+            
             # update q-funcs
-            q1_loss_step, q2_loss_step, quantiles1_step, quantiles2_step = self.update_q_functions(state_batch, action_batch, reward_batch, nextstate_batch, done_batch, beta)
+            q1_loss_step, q2_loss_step, quantiles1_step, quantiles2_step = self.update_q_functions(
+                state_batch, action_batch, reward_batch, nextstate_batch, done_batch, beta)
             q_loss_step = q1_loss_step + q2_loss_step
 
             # measure wasserstein distance
@@ -267,27 +329,18 @@ class TOP_Agent:
             self.q_optimizer.zero_grad()
             q_loss_step.backward()
             self.q_optimizer.step()
-            
-            self._update_counter += 1
 
-            q1_loss += q1_loss_step.detach().item()
-            q2_loss += q2_loss_step.detach().item()
-
-            # every update_interval steps update actor, target nets
+            # update actor
             if self._update_counter % self.update_interval == 0:
-                if not pi_loss:
-                    pi_loss = 0
-                # update policy
-                for p in self.q_funcs.parameters():
-                    p.requires_grad = False
                 pi_loss_step = self.update_policy(state_batch, beta)
                 self.policy_optimizer.zero_grad()
                 pi_loss_step.backward()
                 self.policy_optimizer.step()
-                for p in self.q_funcs.parameters():
-                    p.requires_grad = True
-                # update target policy and q-functions using Polyak averaging
+                pi_loss = pi_loss_step.detach().item()
                 self.update_target()
-                pi_loss += pi_loss_step.detach().item()
 
-        return q1_loss, q2_loss, pi_loss, wd / n_updates, quantiles1_step, quantiles2_step
+            self._update_counter += 1
+            q1_loss += q1_loss_step.detach().item()
+            q2_loss += q2_loss_step.detach().item()
+
+        return q1_loss/n_updates, q2_loss/n_updates, pi_loss, wd/n_updates, quantiles1_step, quantiles2_step

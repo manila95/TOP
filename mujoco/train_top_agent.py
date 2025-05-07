@@ -2,7 +2,9 @@ import random
 from argparse import ArgumentParser
 from collections import deque
 
-import gymnasium as gym
+import gymnasium
+import safety_gymnasium as gym
+
 from gymnasium.wrappers import RescaleAction
 import numpy as np
 import torch
@@ -80,8 +82,8 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
             else:
                 action = agent.get_action(state, state_filter=state_filter)
             
-            nextstate, reward, terminated, truncated, info = env.step(action)
-            done = terminated or truncated
+            nextstate, reward, cost, terminated, truncated, info = env.step(action)
+            done = terminated or truncated or cost > 0
             real_done = truncated if time_step == max_steps else done
             agent.replay_pool.push(Transition(state, action, reward, nextstate, real_done))
             state = nextstate
@@ -145,8 +147,8 @@ def evaluate_agent(
         state, info = env.reset()
         while (not done):
             action = agent.get_action(state, state_filter=state_filter, deterministic=True)
-            nextstate, reward, terminated, truncated, info = env.step(action)
-            done = terminated or truncated
+            nextstate, reward, cost, terminated, truncated, info = env.step(action)
+            done = terminated or truncated or cost > 0
             reward_sum += reward
             state = nextstate
     return reward_sum / n_starts

@@ -71,7 +71,9 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
 
         # sample an optimism setting for this episode
         optimism = agent.TDC.sample()
-
+        if params['model_type'] == 'beta':
+            optimism = params['beta']
+        
         while (not done):
             cumulative_log_timestep += 1
             cumulative_timestep += 1
@@ -83,7 +85,8 @@ def train_agent_model_free(agent: DOPE_Agent, env: GYM_ENV, params: Dict) -> Non
                 action = agent.get_action(state, state_filter=state_filter)
             
             nextstate, reward, cost, terminated, truncated, info = env.step(action)
-            done = terminated or truncated or cost > 0
+            done = (terminated or truncated) or (cost > 0)
+            # print(cost, done)
             real_done = truncated if time_step == max_steps else done
             agent.replay_pool.push(Transition(state, action, reward, nextstate, real_done))
             state = nextstate
@@ -148,6 +151,7 @@ def evaluate_agent(
         while (not done):
             action = agent.get_action(state, state_filter=state_filter, deterministic=True)
             nextstate, reward, cost, terminated, truncated, info = env.step(action)
+            print(cost, terminated, truncated)
             done = terminated or truncated or cost > 0
             reward_sum += reward
             state = nextstate
@@ -167,6 +171,8 @@ def main():
     parser.add_argument('--save_model', dest='save_model', action='store_true')
     parser.add_argument('--n_quantiles', type=int, default=50)
     parser.add_argument('--bandit_lr', type=float, default=0.1)
+    parser.add_argument('--model_type', type=str, default='dope')
+    parser.add_argument('--beta', type=float, default=0.0)
     parser.set_defaults(obs_filter=False)
     parser.set_defaults(save_model=False)
 
